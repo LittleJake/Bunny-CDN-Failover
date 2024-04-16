@@ -89,9 +89,9 @@ def health_check(zone_id):
     global UPSTREAM
     old_origin_url = UPSTREAM[zone_id]["OriginUrl"]
     result = url_check(old_origin_url)
-    logging.debug("Zone %d(%s) is ok? %s" % (zone_id, old_origin_url, result))
+    logging.info("Zone %d(%s) is ok? %s" % (zone_id, old_origin_url, result))
     # check_type = CONFIG[zone_id]
-
+    if result: return
     logging.debug("Checking zone %d for new origin" % zone_id)
 
     flag = False
@@ -100,7 +100,7 @@ def health_check(zone_id):
             update_zone_origin(zone_id, url, v["host_header"])
             UPSTREAM[zone_id] = fetch_zone(zone_id)
             flag = True
-            logging.debug("Update zone %d upstream: %s -> %s" % (zone_id, old_origin_url, url))
+            logging.info("Update zone %d upstream: %s -> %s" % (zone_id, old_origin_url, url))
             break
     
     if not flag: logging.debug("No more upstream for zone %d available." % zone_id)
@@ -111,8 +111,10 @@ def main():
     init_upstreams()
     while True:
         try:
-            for zone_id, _ in UPSTREAM.keys():
+            logging.info("Checking origin.")
+            for zone_id in UPSTREAM.keys():
                 health_check(zone_id)
+
         except Exception as e:
             logging.error(e)
             logging.error("ERROR OCCUR.")
