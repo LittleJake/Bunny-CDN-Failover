@@ -1,0 +1,12 @@
+AccessKey: your_ak
+
+#Zone
+Zone:
+  your_zone_id:
+    OriginUrl: 
+      "url1":
+        type: tcp:443
+        host_header: "url1_host"
+      "url2":
+        type: tcp:443
+        host_header: "url2_host"
