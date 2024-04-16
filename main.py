@@ -19,7 +19,7 @@ conf.L3socket=L3RawSocket
 socket.setdefaulttimeout(5)
 
 # setting logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
 UPSTREAM = {}
 
@@ -45,10 +45,12 @@ def url_check(url):
     else: port = o.port
 
     logging.debug("Sending tcp pkt to %s:%d" % (o.hostname, port))
-    if tcp_check(o.hostname, port) == False: return False
-    resp = requests.get(url=url, timeout=5)
-    return resp.ok
-
+    
+    try:
+        resp = requests.get(url=url, timeout=2, verify=False)
+        return resp.ok
+    except:
+        return tcp_check(o.hostname, port)
 
 def fetch_zone(zone_id):
     headers = {
@@ -102,26 +104,15 @@ def health_check(zone_id):
             break
     
     if not flag: logging.debug("No more upstream for zone %d available." % zone_id)
-    pass
-
-
-
-# fetch all zone
-init_upstreams()
-
-health_check()
-
-exit(0)
-
-# using threading
-# for zone_id, _ in UPSTREAM.keys():
-#     t = threading.Thread()
 
 
 def main():
+    # fetch all zone
+    init_upstreams()
     while True:
         try:
-            health_check()
+            for zone_id, _ in UPSTREAM.keys():
+                health_check(zone_id)
         except Exception as e:
             logging.error(e)
             logging.error("ERROR OCCUR.")
