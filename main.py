@@ -16,7 +16,7 @@ with open(os.path.join(extDataDir, 'config.yml'))as f:
 conf.L3socket=L3RawSocket
 
 # setting global timeout
-socket.setdefaulttimeout(5)
+socket.setdefaulttimeout(CONFIG['Timeout'])
 
 # setting logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -24,14 +24,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 UPSTREAM = {}
 
 def icmp_check(ip):
-    ans, _  = sr( IP(dst=ip)/ICMP() , timeout=1, verbose=False)
+    ans, _  = sr( IP(dst=ip)/ICMP() , timeout=CONFIG['Timeout'], verbose=False)
     if len(ans) != 0:
         return True
 
     return False
 
 def tcp_check(ip, port):
-#     ans, _ = sr( IP(dst=ip)/TCP(dport=port, flags="S") , timeout=1, verbose=False)
+#     ans, _ = sr( IP(dst=ip)/TCP(dport=port, flags="S") , timeout=CONFIG['Timeout'], verbose=False)
 #     if len(ans) != 0:
 #         return True
 
@@ -56,7 +56,7 @@ def url_check(url):
     logging.debug("Sending tcp pkt to %s:%d" % (o.hostname, port))
     
     try:
-        resp = requests.get(url=url, timeout=2, verify=False)
+        resp = requests.get(url=url, timeout=CONFIG['Timeout'], verify=False)
         return resp.ok
     except:
         return tcp_check(o.hostname, port)
@@ -129,7 +129,7 @@ def main():
         except Exception as e:
             logging.error(e)
             logging.error("ERROR OCCUR.")
-        time.sleep(60)
+        time.sleep(CONFIG['Interval'])
 		
 if __name__ == '__main__':
 	main()

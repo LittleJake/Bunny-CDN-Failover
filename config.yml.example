@@ -1,4 +1,6 @@
 AccessKey: your_ak
+Interval: 60
+Timeout: 2
 
 #Zone
 Zone:
