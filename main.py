@@ -50,7 +50,18 @@ def url_check(url):
         resp = requests.get(url=url, timeout=2, verify=False)
         return resp.ok
     except:
-        return tcp_check(o.hostname, port)
+        try:
+            return tcp_check(o.hostname, port)
+        except:
+            try:
+                (family, type, proto, canonname, sockaddr) = socket.getaddrinfo(o.hostname, port, proto=socket.IPPROTO_TCP)
+                s = socket.socket(family, type)
+                s.connect(sockaddr)
+                return True
+            except:
+                return False
+            
+
 
 def fetch_zone(zone_id):
     headers = {
