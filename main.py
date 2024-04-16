@@ -30,12 +30,21 @@ def icmp_check(ip):
 
     return False
 
-# def tcp_check(ip, port):
+def tcp_check(ip, port):
 #     ans, _ = sr( IP(dst=ip)/TCP(dport=port, flags="S") , timeout=1, verbose=False)
 #     if len(ans) != 0:
 #         return True
 
 #     return False
+
+    try:
+        family, type, _, _, sockaddr = socket.getaddrinfo(ip, port, proto=socket.IPPROTO_TCP)[0]
+        s = socket.socket(family, type)
+        s.connect(sockaddr)
+        s.close()
+        return True
+    except:
+        return False
 
 
 def url_check(url):
@@ -50,13 +59,7 @@ def url_check(url):
         resp = requests.get(url=url, timeout=2, verify=False)
         return resp.ok
     except:
-        try:
-            family, type, _, _, sockaddr = socket.getaddrinfo(o.hostname, port, proto=socket.IPPROTO_TCP)[0]
-            s = socket.socket(family, type)
-            s.connect(sockaddr)
-            return True
-        except:
-            return False
+        return tcp_check(o.hostname, port)
             
 
 
