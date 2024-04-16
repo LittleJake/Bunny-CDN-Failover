@@ -54,7 +54,7 @@ def url_check(url):
             return tcp_check(o.hostname, port)
         except:
             try:
-                (family, type, proto, canonname, sockaddr) = socket.getaddrinfo(o.hostname, port, proto=socket.IPPROTO_TCP)[0]
+                family, type, proto, canonname, sockaddr = socket.getaddrinfo(o.hostname, port, proto=socket.IPPROTO_TCP)[0]
                 s = socket.socket(family, type)
                 s.connect(sockaddr)
                 return True
